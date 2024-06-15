@@ -25,6 +25,7 @@ function limpiar(){
 	$("#stock").val("");
 	$("#imagenmuestra").attr("src","");
 	$("#imagenactual").val("");
+	$("#codigo").val("BEAM");
 	$("#print").hide();
 	$("#idarticulo").val("");
 }
@@ -72,7 +73,7 @@ function listar(){
 			}
 		},
 		"bDestroy":true,
-		"iDisplayLength":5,//paginacion
+		"iDisplayLength":10,//paginacion
 		"order":[[0,"desc"]]//ordenar (columna, orden)
 	}).DataTable();
 }

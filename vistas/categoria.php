@@ -38,12 +38,12 @@ if ($_SESSION['almacen']==1) {
     </thead>
     <tbody>
     </tbody>
-    <tfoot>
+    <!--<tfoot>
        <th>Opciones</th>
       <th>Nombre</th>
       <th>Descripcion</th>
       <th>Estado</th>
-    </tfoot>   
+    </tfoot>   -->
   </table>
 </div>
 <div class="panel-body" style="height: 400px;" id="formularioregistros">

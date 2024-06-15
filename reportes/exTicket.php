@@ -33,7 +33,7 @@ $reg=$rspta->fetch_object();
 $empresa = "IMPORT & SERVICE BEAM S.A.C.";
 $documento = "0000000000";
 $direccion = "AV. AVIACIÓN";
-$telefono = "990519116 - 918994628";
+$telefono = " 990519116 - 918994628";
 $email = "beamimportaciones@gmail.com";
 	 ?>
 <div class="zona_impresion">
@@ -45,11 +45,32 @@ $email = "beamimportaciones@gmail.com";
 				<!--mostramos los datos de la empresa en el doc HTML-->
 				.::<strong> <?php echo $empresa; ?></strong>::.<br>
 				<?php echo $documento; ?><br>
-				<?php echo $direccion . '-'.$telefono; ?><br>
+				<?php echo $direccion;?><br>
+				<?php echo $telefono;?><br>
+				<?php echo $email; ?><br>
 			</td>
 		</tr>
 		<tr>
-			<td align="center"><?php echo $reg->fecha; ?></td>
+			<td colspan="3">=============================================</td>
+		</tr>
+		<tr>
+			<td colspan="3" align="center"><strong>¡TICKET DE VENTA!</strong></td>
+		</tr>
+		<!--<tr>
+			<td>
+				N° de venta: <?php echo $reg->serie_comprobante." - ".$reg->num_comprobante; ?>
+			</td>
+		</tr>-->
+		<tr>
+			<td colspan="3" align="center">
+				<?php echo $reg->serie_comprobante." - ".$reg->num_comprobante; ?>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">=============================================</td>
+		</tr>
+		<tr>
+			<td>F. Emisión: <?php echo $reg->fecha; ?></td>
 		</tr>
 		<tr> 
 			<td align="center"></td>
@@ -65,9 +86,7 @@ $email = "beamimportaciones@gmail.com";
 			</td>
 		</tr>
 		<tr>
-			<td>
-				N° de venta: <?php echo $reg->serie_comprobante." - ".$reg->num_comprobante; ?>
-			</td>
+			<td colspan="3">=============================================</td>
 		</tr>
 	</table>
 	<br>
@@ -96,6 +115,9 @@ $email = "beamimportaciones@gmail.com";
 		 } 
 
 		 ?>
+		 <tr>
+			<td colspan="3">=============================================</td>
+		</tr>
 		 <!--mostramos los totales de la venta-->
 		<tr>
 			<td>&nbsp;</td>
@@ -103,10 +125,16 @@ $email = "beamimportaciones@gmail.com";
 			<td align="right"><b>S/. <?php echo $reg->total_venta; ?></b></td>
 		</tr>
 		<tr>
+			<td colspan="3">=============================================</td>
+		</tr>
+		<tr>
 			<td colspan="3">N° de articulos: <?php echo $cantidad; ?> </td>
 		</tr>
 		<tr>
 			<td colspan="3">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="3" align="center">¡NO HAY CAMBIOS NI DEVOLUCIONES!</td>
 		</tr>
 		<tr>
 			<td colspan="3" align="center">¡Gracias por su compra!</td>
