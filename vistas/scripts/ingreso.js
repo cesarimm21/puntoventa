@@ -43,6 +43,15 @@ function limpiar(){
 
 }
 
+function changeTipoComprobante(){
+	const selectElement = document.getElementById("idingreso");
+	const optionSelectedC = document.getElementById("impuesto");
+
+	selectElement.addEventListener("change", (event) => {
+		optionSelectedC.value = `You like ${event.target.value}`;
+	});
+}
+
 //funcion mostrar formulario
 function mostrarform(flag){
 	limpiar();
