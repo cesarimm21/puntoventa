@@ -19,13 +19,15 @@ function init(){
 
 //funcion limpiar
 function limpiar(){
+	const currentDate = new Date();
+	const dateCode = `${currentDate.getFullYear()}${currentDate.getMonth() + 1}${currentDate.getDate()}-${currentDate.getHours()}${currentDate.getMinutes()}${currentDate.getSeconds()}${currentDate.getMilliseconds()}`;
 	$("#codigo").val("");
 	$("#nombre").val("");
 	$("#descripcion").val("");
 	$("#stock").val("");
 	$("#imagenmuestra").attr("src","");
 	$("#imagenactual").val("");
-	$("#codigo").val("BEAM");
+	$("#codigo").val(dateCode);
 	$("#print").hide();
 	$("#idarticulo").val("");
 }
