@@ -27,8 +27,10 @@ function limpiar(){
 	var series=now.getFullYear()+""+(month)+""+(day)+now.getHours()+""+now.getMinutes()+""+now.getSeconds();
 	$("#idcliente").val("");
 	$("#cliente").val("");
-	$("#serie_comprobante").val("TIK01");
-	$("#num_comprobante").val(series);
+	$("#serie_comprobante").val("");
+	$("#num_comprobante").val("");
+	//$("#serie_comprobante").val("TIK01");
+	//$("#num_comprobante").val(series);
 	$("#impuesto").val(0);
 
 	$("#total_venta").val("");
@@ -76,7 +78,7 @@ $("#tipo_comprobante").change(marcarImpuesto);
 
 function marcarImpuesto(){
 	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
-	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 6);
+	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 4);
 	if (tipo_comprobante=='Factura') {
 		$("#impuesto").val(impuesto);
 		$("#serie_comprobante").val(`E_${num_db_last_registry_padded}`);
@@ -121,9 +123,34 @@ function mostrarform(flag){
 	}
 }
 
+//funcion mostrar formulario
+function mostrarformView(flag){
+	limpiar();
+	marcarImpuesto();
+	if(flag){
+		$("#listadoregistros").hide();
+		$("#formularioregistros").show();
+		//$("#btnGuardar").prop("disabled",false);
+		$("#btnagregar").hide();
+		listarArticulos();
+		$("#btnGuardar").hide();
+		$("#btnCancelar").show();
+		detalles=0;
+		$("#btnAgregarArt").show();
+
+
+	}else{
+		$("#listadoregistros").show();
+		$("#formularioregistros").hide();
+		$("#btnagregar").show();
+	}
+}
+
 //cancelar form
 function cancelarform(){
 	limpiar();
+	$("#idcliente").prop("disabled", false);
+	$("#tipo_comprobante").prop("disabled", false);
 	mostrarform(false);
 }
 
@@ -181,6 +208,9 @@ function guardaryeditar(e){
      e.preventDefault();//no se activara la accion predeterminada 
      //$("#btnGuardar").prop("disabled",true);
      var formData=new FormData($("#formulario")[0]);
+	 formData.append('serie_comprobante', $("#serie_comprobante").val());
+     formData.append('num_comprobante', $("#num_comprobante").val());
+     formData.append('impuesto', $("#impuesto").val());
 
      $.ajax({
      	url: "../ajax/venta.php?op=guardaryeditar",
@@ -204,12 +234,14 @@ function mostrar(idventa){
 		function(data,status)
 		{
 			data=JSON.parse(data);
-			mostrarform(true);
+			mostrarformView(true);
 
 			$("#idcliente").val(data.idcliente);
 			$("#idcliente").selectpicker('refresh');
+			$("#idcliente").prop("disabled", true);
 			$("#tipo_comprobante").val(data.tipo_comprobante);
 			$("#tipo_comprobante").selectpicker('refresh');
+			$("#tipo_comprobante").prop("disabled", true);
 			$("#serie_comprobante").val(data.serie_comprobante);
 			$("#num_comprobante").val(data.num_comprobante);
 			$("#fecha_hora").val(data.fecha);

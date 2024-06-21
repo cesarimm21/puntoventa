@@ -127,8 +127,6 @@ function mostrarformView(flag){
 	if(flag){
 		$("#listadoregistros").hide();
 		$("#formularioregistros").show();
-		$("#idproveedor").prop("enabled", true);
-		$("#tipo_comprobante").prop("enabled", true);
 		//$("#btnGuardar").prop("disabled",false);
 		$("#btnagregar").hide();
 		listarArticulos();
@@ -149,6 +147,8 @@ function mostrarformView(flag){
 //cancelar form
 function cancelarform(){
 	limpiar();
+	$("#idproveedor").prop("disabled", false);
+	$("#tipo_comprobante").prop("disabled", false);
 	mostrarform(false);
 }
 
