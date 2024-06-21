@@ -74,21 +74,25 @@ $("#btnGuardar").hide();
 $("#tipo_comprobante").change(marcarImpuesto);
 
 function marcarImpuesto(){
-	
 	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
+	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 6);
 	if (tipo_comprobante=='Factura') {
 		$("#impuesto").val(impuesto);
-		$("#serie_comprobante").val(`E_${Number(num_db_last_registry) + 1}`);
-		$("#num_comprobante").val(`${Number(num_db_last_registry) + 1}`);
+		$("#serie_comprobante").val(`E_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
 	}else if (tipo_comprobante=='Boleta'){
 		$("#impuesto").val("0");
-		$("#serie_comprobante").val(`BL_${Number(num_db_last_registry) + 1}`);
-		$("#num_comprobante").val(`${Number(num_db_last_registry) + 1}`);
+		$("#serie_comprobante").val(`BL_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
 	}else if(tipo_comprobante=='Ticket'){
 		$("#impuesto").val("0");
-		$("#serie_comprobante").val(`TK_${Number(num_db_last_registry) + 1}`);
-		$("#num_comprobante").val(`${Number(num_db_last_registry) + 1}`);
+		$("#serie_comprobante").val(`TK_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
 	}
+}
+
+function padNumber(num, length) {
+    return num.toString().padStart(length, '0');
 }
 
 //funcion mostrar formulario
