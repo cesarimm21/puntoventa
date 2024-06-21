@@ -75,7 +75,7 @@ $("#tipo_comprobante").change(marcarImpuesto);
 
 function marcarImpuesto(){
 	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
-	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 6);
+	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 4);
 	if (tipo_comprobante=='Factura') {
 		$("#impuesto").val(impuesto);
 		$("#serie_comprobante").val(`E_${num_db_last_registry_padded}`);
@@ -103,6 +103,32 @@ function mostrarform(flag){
 	if(flag){
 		$("#listadoregistros").hide();
 		$("#formularioregistros").show();
+		//$("#btnGuardar").prop("disabled",false);
+		$("#btnagregar").hide();
+		listarArticulos();
+
+		$("#btnGuardar").hide();
+		$("#btnCancelar").show();
+		detalles=0;
+		$("#btnAgregarArt").show();
+		//$("#serie_comprobante").val("COM_001");
+
+	}else{
+		$("#listadoregistros").show();
+		$("#formularioregistros").hide();
+		$("#btnagregar").show();
+	}
+}
+
+//funcion mostrar formulario
+function mostrarformView(flag){
+	limpiar();
+	marcarImpuesto();
+	if(flag){
+		$("#listadoregistros").hide();
+		$("#formularioregistros").show();
+		$("#idproveedor").prop("enabled", true);
+		$("#tipo_comprobante").prop("enabled", true);
 		//$("#btnGuardar").prop("disabled",false);
 		$("#btnagregar").hide();
 		listarArticulos();
@@ -179,7 +205,13 @@ function listarArticulos(){
 function guardaryeditar(e){
      e.preventDefault();//no se activara la accion predeterminada 
      //$("#btnGuardar").prop("disabled",true);
+
+	 
+
      var formData=new FormData($("#formulario")[0]);
+	 formData.append('serie_comprobante', $("#serie_comprobante").val());
+     formData.append('num_comprobante', $("#num_comprobante").val());
+     formData.append('impuesto', $("#impuesto").val());
 
      $.ajax({
      	url: "../ajax/ingreso.php?op=guardaryeditar",
@@ -203,12 +235,14 @@ function mostrar(idingreso){
 		function(data,status)
 		{
 			data=JSON.parse(data);
-			mostrarform(true);
+			mostrarformView(true);
 
 			$("#idproveedor").val(data.idproveedor);
 			$("#idproveedor").selectpicker('refresh');
+			$("#idproveedor").prop("disabled", true);
 			$("#tipo_comprobante").val(data.tipo_comprobante);
 			$("#tipo_comprobante").selectpicker('refresh');
+			$("#tipo_comprobante").prop("disabled", true);
 			$("#serie_comprobante").val(data.serie_comprobante);
 			$("#num_comprobante").val(data.num_comprobante);
 			$("#fecha_hora").val(data.fecha);
