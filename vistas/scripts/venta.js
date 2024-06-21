@@ -44,9 +44,63 @@ function limpiar(){
 
 }
 
+var num_db_last_registry = 0;
+
+//funcion para obtener el ultimo registro
+function obtenerUltimoRegistro() {
+	$.ajax({
+	   url: '../ajax/venta.php?op=obtenerUltimoRegistro',
+	   type: 'GET',
+	   dataType: 'json',
+	   success: function(data) {
+		if (data && data.idventa) {
+			num_db_last_registry = data.idventa;
+		}else {
+			num_db_last_registry = 0; // Valor predeterminado si no hay registros
+		}
+		marcarImpuesto(); // Llamar aquí para actualizar los valores
+	   },
+	   error: function(err) {
+		  console.log('Error obteniendo el último registro:', err);
+	   }
+	});
+ }
+
+//declaramos variables necesarias para trabajar con las compras y sus detalles
+var impuesto=18;
+var cont=0;
+var detalles=0;
+
+$("#btnGuardar").hide();
+$("#tipo_comprobante").change(marcarImpuesto);
+
+function marcarImpuesto(){
+	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
+	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 6);
+	if (tipo_comprobante=='Factura') {
+		$("#impuesto").val(impuesto);
+		$("#serie_comprobante").val(`E_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}else if(tipo_comprobante=='Boleta'){
+		$("#impuesto").val("0");
+		$("#serie_comprobante").val(`BL_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}else if(tipo_comprobante=='Ticket'){
+		$("#impuesto").val("0");
+		$("#serie_comprobante").val(`TK_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}
+}
+
+function padNumber(num, length) {
+    return num.toString().padStart(length, '0');
+}
+
 //funcion mostrar formulario
 function mostrarform(flag){
+	obtenerUltimoRegistro();
 	limpiar();
+	marcarImpuesto();
 	if(flag){
 		$("#listadoregistros").hide();
 		$("#formularioregistros").show();
@@ -184,23 +238,6 @@ function anular(idventa){
 			});
 		}
 	})
-}
-
-//declaramos variables necesarias para trabajar con las compras y sus detalles
-var impuesto=18;
-var cont=0;
-var detalles=0;
-
-$("#btnGuardar").hide();
-$("#tipo_comprobante").change(marcarImpuesto);
-
-function marcarImpuesto(){
-	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
-	if (tipo_comprobante=='Factura') {
-		$("#impuesto").val(impuesto);
-	}else{
-		$("#impuesto").val("0.00");
-	}
 }
 
 function agregarDetalle(idarticulo,articulo,precio_venta){
