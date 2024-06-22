@@ -19,22 +19,25 @@ function init(){
 
 //funcion limpiar
 function limpiar(){
-
+//obtenemos la fecha actual
+	var now = new Date();
+	var day =("0"+now.getDate()).slice(-2);
+	var month=("0"+(now.getMonth()+1)).slice(-2);
+	var today=now.getFullYear()+"-"+(month)+"-"+(day);
+	var series=now.getFullYear()+""+(month)+""+(day)+now.getHours()+""+now.getMinutes()+""+now.getSeconds();
 	$("#idcliente").val("");
 	$("#cliente").val("");
 	$("#serie_comprobante").val("");
 	$("#num_comprobante").val("");
-	$("#impuesto").val("");
+	//$("#serie_comprobante").val("TIK01");
+	//$("#num_comprobante").val(series);
+	$("#impuesto").val(0);
 
 	$("#total_venta").val("");
 	$(".filas").remove();
 	$("#total").html("0");
 
-	//obtenemos la fecha actual
-	var now = new Date();
-	var day =("0"+now.getDate()).slice(-2);
-	var month=("0"+(now.getMonth()+1)).slice(-2);
-	var today=now.getFullYear()+"-"+(month)+"-"+(day);
+	
 	$("#fecha_hora").val(today);
 
 	//marcamos el primer tipo_documento
@@ -43,9 +46,63 @@ function limpiar(){
 
 }
 
+var num_db_last_registry = 0;
+
+//funcion para obtener el ultimo registro
+function obtenerUltimoRegistro() {
+	$.ajax({
+	   url: '../ajax/venta.php?op=obtenerUltimoRegistro',
+	   type: 'GET',
+	   dataType: 'json',
+	   success: function(data) {
+		if (data && data.idventa) {
+			num_db_last_registry = data.idventa;
+		}else {
+			num_db_last_registry = 0; // Valor predeterminado si no hay registros
+		}
+		marcarImpuesto(); // Llamar aquí para actualizar los valores
+	   },
+	   error: function(err) {
+		  console.log('Error obteniendo el último registro:', err);
+	   }
+	});
+ }
+
+//declaramos variables necesarias para trabajar con las compras y sus detalles
+var impuesto=18;
+var cont=0;
+var detalles=0;
+
+$("#btnGuardar").hide();
+$("#tipo_comprobante").change(marcarImpuesto);
+
+function marcarImpuesto(){
+	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
+	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 4);
+	if (tipo_comprobante=='Factura') {
+		$("#impuesto").val(impuesto);
+		$("#serie_comprobante").val(`E_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}else if(tipo_comprobante=='Boleta'){
+		$("#impuesto").val("0");
+		$("#serie_comprobante").val(`BL_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}else if(tipo_comprobante=='Ticket'){
+		$("#impuesto").val("0");
+		$("#serie_comprobante").val(`TK_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}
+}
+
+function padNumber(num, length) {
+    return num.toString().padStart(length, '0');
+}
+
 //funcion mostrar formulario
 function mostrarform(flag){
+	obtenerUltimoRegistro();
 	limpiar();
+	marcarImpuesto();
 	if(flag){
 		$("#listadoregistros").hide();
 		$("#formularioregistros").show();
@@ -66,9 +123,34 @@ function mostrarform(flag){
 	}
 }
 
+//funcion mostrar formulario
+function mostrarformView(flag){
+	limpiar();
+	marcarImpuesto();
+	if(flag){
+		$("#listadoregistros").hide();
+		$("#formularioregistros").show();
+		//$("#btnGuardar").prop("disabled",false);
+		$("#btnagregar").hide();
+		listarArticulos();
+		$("#btnGuardar").hide();
+		$("#btnCancelar").show();
+		detalles=0;
+		$("#btnAgregarArt").show();
+
+
+	}else{
+		$("#listadoregistros").show();
+		$("#formularioregistros").hide();
+		$("#btnagregar").show();
+	}
+}
+
 //cancelar form
 function cancelarform(){
 	limpiar();
+	$("#idcliente").prop("disabled", false);
+	$("#tipo_comprobante").prop("disabled", false);
 	mostrarform(false);
 }
 
@@ -126,6 +208,9 @@ function guardaryeditar(e){
      e.preventDefault();//no se activara la accion predeterminada 
      //$("#btnGuardar").prop("disabled",true);
      var formData=new FormData($("#formulario")[0]);
+	 formData.append('serie_comprobante', $("#serie_comprobante").val());
+     formData.append('num_comprobante', $("#num_comprobante").val());
+     formData.append('impuesto', $("#impuesto").val());
 
      $.ajax({
      	url: "../ajax/venta.php?op=guardaryeditar",
@@ -149,12 +234,14 @@ function mostrar(idventa){
 		function(data,status)
 		{
 			data=JSON.parse(data);
-			mostrarform(true);
+			mostrarformView(true);
 
 			$("#idcliente").val(data.idcliente);
 			$("#idcliente").selectpicker('refresh');
+			$("#idcliente").prop("disabled", true);
 			$("#tipo_comprobante").val(data.tipo_comprobante);
 			$("#tipo_comprobante").selectpicker('refresh');
+			$("#tipo_comprobante").prop("disabled", true);
 			$("#serie_comprobante").val(data.serie_comprobante);
 			$("#num_comprobante").val(data.num_comprobante);
 			$("#fecha_hora").val(data.fecha);
@@ -185,23 +272,6 @@ function anular(idventa){
 	})
 }
 
-//declaramos variables necesarias para trabajar con las compras y sus detalles
-var impuesto=18;
-var cont=0;
-var detalles=0;
-
-$("#btnGuardar").hide();
-$("#tipo_comprobante").change(marcarImpuesto);
-
-function marcarImpuesto(){
-	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
-	if (tipo_comprobante=='Factura') {
-		$("#impuesto").val(impuesto);
-	}else{
-		$("#impuesto").val("0");
-	}
-}
-
 function agregarDetalle(idarticulo,articulo,precio_venta){
 	var cantidad=1;
 	var descuento=0;
@@ -211,9 +281,9 @@ function agregarDetalle(idarticulo,articulo,precio_venta){
 		var fila='<tr class="filas" id="fila'+cont+'">'+
         '<td><button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')">X</button></td>'+
         '<td><input type="hidden" name="idarticulo[]" value="'+idarticulo+'">'+articulo+'</td>'+
-        '<td><input type="number" name="cantidad[]" id="cantidad' + cont + '" value="'+cantidad+'"></td>'+
-        '<td><input type="number" name="precio_venta[]" id="precio_venta' + cont + '" value="'+precio_venta+'"></td>'+
-        '<td><input type="number" name="descuento[]" id="descuento' + cont + '" value="'+descuento+'"></td>'+
+        '<td><input type="number" name="cantidad[]" id="cantidad' + cont + '" value="'+cantidad+'" onkeyup="modificarSubtotales()"></td>'+
+        '<td><input type="number" name="precio_venta[]" id="precio_venta' + cont + '" value="'+precio_venta+'" onkeyup="modificarSubtotales()"></td>'+
+        '<td><input type="number" name="descuento[]" id="descuento' + cont + '" value="'+descuento+'" onkeyup="modificarSubtotales()"></td>'+
         '<td><span id="subtotal'+cont+'" name="subtotal">'+subtotal+'</span></td>'+
         '<td><button type="button" onclick="modificarSubtotales()" class="btn btn-info"><i class="fa fa-refresh"></i></button></td>'+
 		'</tr>';

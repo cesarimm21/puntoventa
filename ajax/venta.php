@@ -143,5 +143,14 @@ switch ($_GET["op"]) {
 		echo json_encode($results);
 
 				break;
+				case 'obtenerUltimoRegistro':
+					$sql = "SELECT MAX(idventa) as idventa FROM venta";
+					$rspta = ejecutarConsultaSimpleFila($sql);
+					if ($rspta) {
+						echo json_encode($rspta);
+					 } else {
+						echo json_encode(['idventa' => 0]); // Respuesta predeterminada si no hay registros
+					 }
+					break;
 }
  ?>

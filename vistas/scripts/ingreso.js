@@ -43,9 +43,63 @@ function limpiar(){
 
 }
 
+var num_db_last_registry = 0;
+
+//funcion para obtener el ultimo registro
+function obtenerUltimoRegistro() {
+	$.ajax({
+	   url: '../ajax/ingreso.php?op=obtenerUltimoRegistro',
+	   type: 'GET',
+	   dataType: 'json',
+	   success: function(data) {
+		if (data && data.idingreso) {
+			num_db_last_registry = data.idingreso;
+		}else {
+			num_db_last_registry = 0; // Valor predeterminado si no hay registros
+		}
+		marcarImpuesto(); // Llamar aquí para actualizar los valores
+	   },
+	   error: function(err) {
+		  console.log('Error obteniendo el último registro:', err);
+	   }
+	});
+ }
+
+//declaramos variables necesarias para trabajar con las compras y sus detalles
+var impuesto=18;
+var cont=0;
+var detalles=0;
+
+$("#btnGuardar").hide();
+$("#tipo_comprobante").change(marcarImpuesto);
+
+function marcarImpuesto(){
+	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
+	var num_db_last_registry_padded = padNumber((Number(num_db_last_registry) + 1), 4);
+	if (tipo_comprobante=='Factura') {
+		$("#impuesto").val(impuesto);
+		$("#serie_comprobante").val(`E_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}else if (tipo_comprobante=='Boleta'){
+		$("#impuesto").val("0");
+		$("#serie_comprobante").val(`BL_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}else if(tipo_comprobante=='Ticket'){
+		$("#impuesto").val("0");
+		$("#serie_comprobante").val(`TK_${num_db_last_registry_padded}`);
+		$("#num_comprobante").val(`${num_db_last_registry_padded}`);
+	}
+}
+
+function padNumber(num, length) {
+    return num.toString().padStart(length, '0');
+}
+
 //funcion mostrar formulario
 function mostrarform(flag){
+	obtenerUltimoRegistro();
 	limpiar();
+	marcarImpuesto();
 	if(flag){
 		$("#listadoregistros").hide();
 		$("#formularioregistros").show();
@@ -57,7 +111,31 @@ function mostrarform(flag){
 		$("#btnCancelar").show();
 		detalles=0;
 		$("#btnAgregarArt").show();
+		//$("#serie_comprobante").val("COM_001");
 
+	}else{
+		$("#listadoregistros").show();
+		$("#formularioregistros").hide();
+		$("#btnagregar").show();
+	}
+}
+
+//funcion mostrar formulario
+function mostrarformView(flag){
+	limpiar();
+	marcarImpuesto();
+	if(flag){
+		$("#listadoregistros").hide();
+		$("#formularioregistros").show();
+		//$("#btnGuardar").prop("disabled",false);
+		$("#btnagregar").hide();
+		listarArticulos();
+
+		$("#btnGuardar").hide();
+		$("#btnCancelar").show();
+		detalles=0;
+		$("#btnAgregarArt").show();
+		//$("#serie_comprobante").val("COM_001");
 
 	}else{
 		$("#listadoregistros").show();
@@ -69,6 +147,8 @@ function mostrarform(flag){
 //cancelar form
 function cancelarform(){
 	limpiar();
+	$("#idproveedor").prop("disabled", false);
+	$("#tipo_comprobante").prop("disabled", false);
 	mostrarform(false);
 }
 
@@ -125,7 +205,13 @@ function listarArticulos(){
 function guardaryeditar(e){
      e.preventDefault();//no se activara la accion predeterminada 
      //$("#btnGuardar").prop("disabled",true);
+
+	 
+
      var formData=new FormData($("#formulario")[0]);
+	 formData.append('serie_comprobante', $("#serie_comprobante").val());
+     formData.append('num_comprobante', $("#num_comprobante").val());
+     formData.append('impuesto', $("#impuesto").val());
 
      $.ajax({
      	url: "../ajax/ingreso.php?op=guardaryeditar",
@@ -149,12 +235,14 @@ function mostrar(idingreso){
 		function(data,status)
 		{
 			data=JSON.parse(data);
-			mostrarform(true);
+			mostrarformView(true);
 
 			$("#idproveedor").val(data.idproveedor);
 			$("#idproveedor").selectpicker('refresh');
+			$("#idproveedor").prop("disabled", true);
 			$("#tipo_comprobante").val(data.tipo_comprobante);
 			$("#tipo_comprobante").selectpicker('refresh');
+			$("#tipo_comprobante").prop("disabled", true);
 			$("#serie_comprobante").val(data.serie_comprobante);
 			$("#num_comprobante").val(data.num_comprobante);
 			$("#fecha_hora").val(data.fecha);
@@ -185,22 +273,6 @@ function anular(idingreso){
 	})
 }
 
-//declaramos variables necesarias para trabajar con las compras y sus detalles
-var impuesto=18;
-var cont=0;
-var detalles=0;
-
-$("#btnGuardar").hide();
-$("#tipo_comprobante").change(marcarImpuesto);
-
-function marcarImpuesto(){
-	var tipo_comprobante=$("#tipo_comprobante option:selected").text();
-	if (tipo_comprobante=='Factura') {
-		$("#impuesto").val(impuesto);
-	}else{
-		$("#impuesto").val("0");
-	}
-}
 
 function agregarDetalle(idarticulo,articulo){
 	var cantidad=1;

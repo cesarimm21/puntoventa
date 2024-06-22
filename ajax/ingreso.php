@@ -102,7 +102,6 @@ switch ($_GET["op"]) {
 			$persona = new Persona();
 
 			$rspta = $persona->listarp();
-
 			while ($reg = $rspta->fetch_object()) {
 				echo '<option value='.$reg->idpersona.'>'.$reg->nombre.'</option>';
 			}
@@ -134,5 +133,14 @@ switch ($_GET["op"]) {
 		echo json_encode($results);
 
 				break;
+				case 'obtenerUltimoRegistro':
+					$sql = "SELECT MAX(idingreso) as idingreso FROM ingreso";
+					$rspta = ejecutarConsultaSimpleFila($sql);
+					if ($rspta) {
+						echo json_encode($rspta);
+					 } else {
+						echo json_encode(['idingreso' => 0]); // Respuesta predeterminada si no hay registros
+					 }
+					break;
 }
  ?>

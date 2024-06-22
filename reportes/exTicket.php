@@ -30,9 +30,12 @@ $rspta = $venta->ventacabecera($_GET["id"]);
 $reg=$rspta->fetch_object();
 
 //establecemos los datos de la empresa
+$logo="logo.png";
+$ext_logo="png";
 $empresa = "IMPORT & SERVICE BEAM S.A.C.";
-$documento = "0000000000";
-$direccion = "AV. AVIACIÓN";
+$documento = "";
+$direccion = "Villa Faucett Mz B Lote 11";
+$referencia = "REFERENCIA: FRENTE AL MERCADO PESQUERO";
 $telefono = " 990519116 - 918994628";
 $email = "beamimportaciones@gmail.com";
 	 ?>
@@ -43,9 +46,11 @@ $email = "beamimportaciones@gmail.com";
 		<tr>
 			<td align="center">
 				<!--mostramos los datos de la empresa en el doc HTML-->
+				<!--<img src="logo.png" alt="Girl in a jacket" width="100" height="100">-->
 				.::<strong> <?php echo $empresa; ?></strong>::.<br>
 				<?php echo $documento; ?><br>
 				<?php echo $direccion;?><br>
+				<?php echo $referencia;?><br>
 				<?php echo $telefono;?><br>
 				<?php echo $email; ?><br>
 			</td>
@@ -81,9 +86,9 @@ $email = "beamimportaciones@gmail.com";
 			</td>
 		</tr>
 		<tr>
-			<td>
+			<!--<td>
 				<?php echo $reg->tipo_documento.": ".$reg->num_documento; ?>
-			</td>
+			</td>-->
 		</tr>
 		<tr>
 			<td colspan="3">=============================================</td>
