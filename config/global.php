@@ -11,7 +11,7 @@ define("DB_USERNAME", "root");
 
 //conraseña del usuario de base de datos
 // CAMBIAR AQUI PASSWORD LOCAL DATABASE
-define("DB_PASSWORD", "12345678");
+define("DB_PASSWORD", "");
 
 //codificacion de caracteres
 define("DB_ENCODE", "utf8");
